@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Top Slide-Out Toolbar</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="topbar tool-bg" id="topbar">
+    <button class="tool" type="button" title="Search" aria-label="Search">🔍</button>
+    <button class="tool" type="button" title="Add" aria-label="Add">➕</button>
+    <button class="tool" type="button" title="Settings" aria-label="Settings">⚙️</button>
+  </div>
+
+  <div class="topbar-hotspot" id="hotspot" aria-hidden="true"></div>
+
+  <div class="content">
+    <h1>Items</h1>
+    <table>
+      <tr><h2><th>Name</th><th>Status</th></h2></tr>
+      <tr>
+        <td colspan="2">
+          <button class="row-btn" type="button" data-item-id="1" aria-label="Open Item 1">
+            <span class="row-name">Item 1</span>
+            <span class="row-status">Active</span>
+          </button>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <button class="row-btn" type="button" data-item-id="2" aria-label="Open Item 2">
+            <span class="row-name">Item 2</span>
+            <span class="row-status">Inactive</span>
+          </button>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <button class="row-btn" type="button" data-item-id="3" aria-label="Open Item 3">
+            <span class="row-name">Item 3</span>
+            <span class="row-status">Active</span>
+          </button>
+        </td>
+      </tr>
+            <tr>
+        <td colspan="2">
+          <button class="row-btn" type="button" data-item-id="3" aria-label="Open Item 3">
+            <span class="row-name">Item 4</span>
+            <span class="row-status">Active</span>
+          </button>
+        </td>
+      </tr>
+            <tr>
+        <td colspan="2">
+          <button class="row-btn" type="button" data-item-id="4" aria-label="Open Item 4">
+            <span class="row-name">Item 5</span>
+            <span class="row-status">Active</span>
+          </button>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <script>
+    const topbar = document.getElementById("topbar");
+    const hotspot = document.getElementById("hotspot");
+
+    let closeTimeout = null;
+
+    function openBar() {
+      if (closeTimeout) {
+        clearTimeout(closeTimeout);
+        closeTimeout = null;
+      }
+      if (!topbar.classList.contains('open')) {
+        topbar.classList.add('open');
+      }
+    }
+
+    function closeBar(delay = 250) {
+      if (closeTimeout) clearTimeout(closeTimeout);
+      closeTimeout = setTimeout(() => {
+        topbar.classList.remove('open');
+        closeTimeout = null;
+      }, delay);
+    }
+
+    // Open when hovering the top hotspot or over the topbar
+    hotspot.addEventListener('mouseenter', openBar);
+    topbar.addEventListener('mouseenter', openBar);
+
+    // Close shortly after mouse leaves both the hotspot and topbar
+    hotspot.addEventListener('mouseleave', () => closeBar(250));
+    topbar.addEventListener('mouseleave', () => closeBar(250));
+
+    // Close on Escape
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && topbar.classList.contains("open")) {
+        closeBar(0);
+      }
+    });
+
+    // Row click handlers (each table row is a button)
+    document.querySelectorAll('.row-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const name = btn.querySelector('.row-name')?.textContent.trim();
+        console.log('Row clicked:', name, btn.dataset.itemId);
+        // TODO: replace with navigation or open detail view
+      });
+    });
+  </script>
+</body>
+</html>
+
