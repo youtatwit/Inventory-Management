@@ -1,0 +1,81 @@
+/* Extracted from test.html */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Top toolbar that slides down */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+
+  padding: 0 16px;
+  border-bottom: 1px solid #ccc;
+  background: #fff;
+
+  transform: translateY(-100%);
+  transition: transform 200ms ease;
+  z-index: 1000;
+}
+
+.topbar.open {
+  transform: translateY(0);
+}
+
+.tool {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #aaa;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Small handle/button that stays visible */
+.topbar-handle {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 110px;
+  height: 22px;
+
+  border: 1px solid #aaa;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  background: #fff;
+
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  user-select: none;
+
+  z-index: 1100;
+}
+
+/* Page content spacing */
+.content {
+  padding: 20px;
+  padding-top: 40px; 
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
