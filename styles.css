@@ -431,22 +431,22 @@ body {
   border: 1px solid transparent;
 }
 
-.status-pill--success {
+.status-pill--active {
   background: rgba(159, 186, 159, 0.14);
   color: #d8f3d2;
   border-color: rgba(216, 243, 210, 0.12);
 }
 
-.status-pill--warning {
-  background: rgba(225, 146, 78, 0.14);
-  color: #ffd7b2;
-  border-color: rgba(255, 215, 178, 0.14);
-}
-
-.status-pill--danger {
+.status-pill--inactive {
   background: rgba(205, 88, 51, 0.16);
   color: #ffd0c4;
   border-color: rgba(255, 208, 196, 0.14);
+}
+
+.status-pill--error {
+  background: rgba(255, 221, 87, 0.22);
+  color: #ffe9a3;
+  border-color: rgba(255, 233, 163, 0.3);
 }
 
 /* ---------------------------
