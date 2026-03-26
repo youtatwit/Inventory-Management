@@ -1,6 +1,6 @@
 const topbar = document.getElementById("topbar");
 const hotspot = document.getElementById("hotspot");
-const tableBody = document.getElementById("inventoryTableBody");
+const inventoryTable = document.getElementById("inventoryTable");
 const searchInput = document.getElementById("searchInput");
 const resultsCount = document.getElementById("resultsCount");
 
@@ -198,22 +198,29 @@ function createRowGroup(item) {
 }
 
 function renderTable(items) {
-  tableBody.innerHTML = "";
+  inventoryTable
+    .querySelectorAll("tbody.row-group, tbody.table-empty-body")
+    .forEach((section) => section.remove());
+
   resultsCount.textContent = `${items.length} item${items.length === 1 ? "" : "s"}`;
 
   if (!items.length) {
+    const emptyBody = document.createElement("tbody");
+    emptyBody.className = "table-empty-body";
+
     const emptyRow = document.createElement("tr");
     emptyRow.innerHTML = `
       <td colspan="4" class="empty-state">
         No matching inventory items found.
       </td>
     `;
-    tableBody.appendChild(emptyRow);
+    emptyBody.appendChild(emptyRow);
+    inventoryTable.appendChild(emptyBody);
     return;
   }
 
   items.forEach((item) => {
-    tableBody.appendChild(createRowGroup(item));
+    inventoryTable.appendChild(createRowGroup(item));
   });
 
   if (openItemId !== null) {

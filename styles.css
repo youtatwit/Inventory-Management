@@ -279,10 +279,10 @@ body {
   background: transparent;
   color: var(--text);
   display: grid;
-  grid-template-columns: minmax(240px, 1.8fr) 1fr 1fr 0.7fr auto;
+  grid-template-columns: minmax(240px, 1.8fr) 1fr 1fr 0.7fr;
   gap: 16px;
   align-items: center;
-  padding: 18px 20px;
+  padding: 18px 56px 18px 20px;
   text-align: left;
   cursor: pointer;
   position: relative;
@@ -346,12 +346,16 @@ body {
 .chevron {
   display: inline-grid;
   place-items: center;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--muted);
   transition: transform 180ms ease, color 180ms ease;
 }
 
 .row-group.is-open .chevron {
-  transform: rotate(180deg);
+  transform: translateY(-50%) rotate(180deg);
   color: var(--accent);
 }
 
@@ -467,7 +471,7 @@ body {
   }
 
   .row-toggle {
-    grid-template-columns: minmax(180px, 1.4fr) 1fr 1fr auto;
+    grid-template-columns: minmax(180px, 1.4fr) 1fr 0.8fr;
   }
 
   .category-cell {
@@ -503,8 +507,9 @@ body {
   }
 
   .row-toggle {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
     gap: 14px;
+    padding-right: 52px;
   }
 
   .row-main {
@@ -516,9 +521,7 @@ body {
   }
 
   .chevron {
-    grid-column: 2 / 3;
-    grid-row: 1 / 5;
-    align-self: center;
+    right: 16px;
   }
 
   .details-grid {
