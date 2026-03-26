@@ -1,6 +1,8 @@
 const inventoryTable = document.getElementById("inventoryTable");
 const searchInput = document.getElementById("searchInput");
 const resultsCount = document.getElementById("resultsCount");
+const filterBtn = document.getElementById("filterBtn");
+const filterDropdown = document.getElementById("filterDropdown");
 const fabMenu = document.getElementById("fabMenu");
 const profileFab = document.getElementById("profileFab");
 const settingsFab = document.getElementById("settingsFab");
@@ -72,6 +74,19 @@ const inventoryItems = [
 
 let currentItems = [...inventoryItems];
 let openItemId = null;
+let activeFilters = {
+    category: [],
+    status: [],
+    accessLevel: []
+};
+
+// tri-state sorting state: null = none, 'asc', 'desc'
+let sortState = {
+    name: null,
+    category: null,
+    status: null,
+    accessLevel: null
+};
 
 function getStatusClass(status) {
     switch (status.toLowerCase()) {
@@ -214,6 +229,9 @@ function renderTable(items) {
         inventoryTable.appendChild(createRowGroup(item));
     });
 
+    // add interactive handlers for header clicks (tri-state sort)
+    attachHeaderSortHandlers();
+
     if (openItemId !== null) {
         const existingGroup = document.querySelector(`.row-group[data-item-id="${openItemId}"]`);
         if (existingGroup) {
@@ -222,6 +240,66 @@ function renderTable(items) {
             openItemId = null;
         }
     }
+}
+
+function attachHeaderSortHandlers() {
+    const headerCells = inventoryTable.querySelectorAll('thead th');
+
+    // clear previous handlers by cloning nodes
+    headerCells.forEach((th) => {
+        const key = th.dataset.key;
+        if (!key) return;
+        th.classList.add('sortable');
+
+        th.onclick = () => {
+            handleHeaderClick(key, th);
+        };
+    });
+}
+
+function handleHeaderClick(key, th) {
+    // toggle tri-state for the clicked key, clear others
+    const current = sortState[key];
+    const next = current === null ? 'asc' : current === 'asc' ? 'desc' : null;
+
+    // reset all
+    Object.keys(sortState).forEach(k => sortState[k] = null);
+    sortState[key] = next;
+
+    // update UI indicators
+    updateHeaderIndicators();
+
+    // apply sorting
+    applySortAndRender();
+}
+
+function updateHeaderIndicators() {
+    const headerCells = inventoryTable.querySelectorAll('thead th');
+    headerCells.forEach((th) => {
+        const key = th.dataset.key;
+        th.classList.remove('sort-asc', 'sort-desc');
+        if (!key) return;
+        if (sortState[key] === 'asc') th.classList.add('sort-asc');
+        if (sortState[key] === 'desc') th.classList.add('sort-desc');
+    });
+}
+
+function applySortAndRender() {
+    const activeKey = Object.keys(sortState).find(k => sortState[k]);
+    let items = [...currentItems];
+
+    if (activeKey) {
+        const dir = sortState[activeKey] === 'asc' ? 1 : -1;
+        items.sort((a, b) => {
+            const av = (a[activeKey] || '').toString().toLowerCase();
+            const bv = (b[activeKey] || '').toString().toLowerCase();
+            if (av < bv) return -1 * dir;
+            if (av > bv) return 1 * dir;
+            return 0;
+        });
+    }
+
+    renderTable(items);
 }
 
 function closeAllRows() {
@@ -322,8 +400,220 @@ function filterItems(query) {
 }
 
 searchInput.addEventListener("input", (event) => {
-    filterItems(event.target.value);
+    debounceFilter(event.target.value);
 });
+
+// debounce helper
+let debounceTimer = null;
+function debounceFilter(val) {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => filterItems(val), 220);
+}
+
+// Build filter dropdown content
+function buildFilterDropdown() {
+    const categories = Array.from(new Set(inventoryItems.map(i => i.category))).sort();
+    const statuses = Array.from(new Set(inventoryItems.map(i => i.status))).sort();
+    const access = Array.from(new Set(inventoryItems.map(i => i.accessLevel))).sort();
+
+    filterDropdown.innerHTML = '';
+
+    const makeGroup = (title, list, key) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'filter-group';
+        const h = document.createElement('h4');
+        h.textContent = title;
+        wrap.appendChild(h);
+
+        const listWrap = document.createElement('div');
+        listWrap.className = 'filter-list';
+
+        list.forEach(v => {
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.className = 'filter-chip';
+            chip.textContent = v;
+            chip.dataset.value = v;
+            // mark active if already present in activeFilters so selection persists
+            const arrKey = key;
+            if (Array.isArray(activeFilters[arrKey]) && activeFilters[arrKey].includes(v)) {
+                chip.classList.add('active');
+            }
+            chip.addEventListener('click', () => {
+                toggleFilterChip(key, v, chip);
+            });
+            listWrap.appendChild(chip);
+        });
+
+        wrap.appendChild(listWrap);
+        return wrap;
+    };
+
+    filterDropdown.appendChild(makeGroup('Category', categories, 'category'));
+    filterDropdown.appendChild(makeGroup('Status', statuses, 'status'));
+    filterDropdown.appendChild(makeGroup('Access', access, 'accessLevel'));
+
+    const actions = document.createElement('div');
+    actions.className = 'filter-actions';
+
+    const clearBtn = document.createElement('button');
+    clearBtn.className = 'filter-clear';
+    clearBtn.type = 'button';
+    clearBtn.textContent = 'Clear';
+    clearBtn.addEventListener('click', () => {
+        activeFilters = { category: [], status: [], accessLevel: [] };
+        // reset chips
+        filterDropdown.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        applyFiltersAndRender();
+    });
+
+    const applyBtn = document.createElement('button');
+    applyBtn.className = 'filter-apply';
+    applyBtn.type = 'button';
+    applyBtn.textContent = 'Apply';
+    applyBtn.addEventListener('click', () => {
+        closeFilterDropdown();
+        applyFiltersAndRender();
+    });
+
+    actions.appendChild(clearBtn);
+    actions.appendChild(applyBtn);
+    filterDropdown.appendChild(actions);
+}
+
+function toggleFilterChip(key, value, chipEl) {
+    const arrKey = key;
+    const idx = activeFilters[arrKey].indexOf(value);
+    if (idx === -1) {
+        activeFilters[arrKey].push(value);
+        chipEl.classList.add('active');
+    } else {
+        activeFilters[arrKey].splice(idx, 1);
+        chipEl.classList.remove('active');
+    }
+}
+
+function openFilterDropdown() {
+    filterDropdown.hidden = false;
+    filterDropdown.setAttribute('aria-hidden', 'false');
+    filterBtn.setAttribute('aria-expanded', 'true');
+}
+
+function closeFilterDropdown() {
+    filterDropdown.hidden = true;
+    filterDropdown.setAttribute('aria-hidden', 'true');
+    filterBtn.setAttribute('aria-expanded', 'false');
+}
+
+filterBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (filterDropdown.hidden) {
+        buildFilterDropdown();
+        openFilterDropdown();
+    } else {
+        closeFilterDropdown();
+    }
+});
+
+document.addEventListener('click', (e) => {
+    if (!filterDropdown.contains(e.target) && e.target !== filterBtn) {
+        closeFilterDropdown();
+    }
+});
+
+// Apply activeFilters and search query, then sort and render
+function applyFiltersAndRender() {
+    // start from full inventory
+    currentItems = [...inventoryItems];
+
+    // apply text search
+    const q = searchInput.value.trim().toLowerCase();
+    if (q) {
+        currentItems = currentItems.filter((item) => {
+            return [
+                item.name,
+                item.category,
+                item.status,
+                item.accessLevel,
+                item.sku,
+                item.supplier,
+                item.location,
+                item.notes
+            ].some((value) => String(value).toLowerCase().includes(q));
+        });
+    }
+
+    // category filter
+    if (activeFilters.category.length) {
+        currentItems = currentItems.filter(i => activeFilters.category.includes(i.category));
+    }
+
+    // status filter
+    if (activeFilters.status.length) {
+        currentItems = currentItems.filter(i => activeFilters.status.includes(i.status));
+    }
+
+    // accessLevel filter
+    if (activeFilters.accessLevel.length) {
+        currentItems = currentItems.filter(i => activeFilters.accessLevel.includes(i.accessLevel));
+    }
+
+    // after filters, apply sort
+    const activeKey = Object.keys(sortState).find(k => sortState[k]);
+    if (activeKey) {
+        const dir = sortState[activeKey] === 'asc' ? 1 : -1;
+        currentItems.sort((a, b) => {
+            const av = (a[activeKey] || '').toString().toLowerCase();
+            const bv = (b[activeKey] || '').toString().toLowerCase();
+            if (av < bv) return -1 * dir;
+            if (av > bv) return 1 * dir;
+            return 0;
+        });
+    }
+
+    renderTable(currentItems);
+}
+
+// Clicking on cells for category/status/access toggles sort for that column
+function attachCellClickSortHandlers() {
+    document.querySelectorAll('.category-cell').forEach(cell => {
+        cell.style.cursor = 'pointer';
+        cell.onclick = (e) => {
+            const key = 'category';
+            handleHeaderClick(key, inventoryTable.querySelector('thead th[data-key="category"]'));
+        };
+    });
+
+    document.querySelectorAll('.details-row .detail-value').forEach(() => {});
+
+    document.querySelectorAll('.access-cell').forEach(cell => {
+        cell.style.cursor = 'pointer';
+        cell.onclick = (e) => {
+            const key = 'accessLevel';
+            handleHeaderClick(key, inventoryTable.querySelector('thead th[data-key="accessLevel"]'));
+        };
+    });
+
+    // status cells have classed status-pill inside; make the parent clickable
+    document.querySelectorAll('.row-data').forEach(cell => {
+        const pill = cell.querySelector('.status-pill');
+        if (pill) {
+            cell.style.cursor = 'pointer';
+            cell.onclick = (e) => {
+                const key = 'status';
+                handleHeaderClick(key, inventoryTable.querySelector('thead th[data-key="status"]'));
+            };
+        }
+    });
+}
+
+// Ensure cell click handlers are attached after render
+const originalRenderTable = renderTable;
+renderTable = function(items) {
+    originalRenderTable(items);
+    attachCellClickSortHandlers();
+    updateHeaderIndicators();
+};
 
 const fabActions = [...document.querySelectorAll(".fab-action")];
 

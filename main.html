@@ -69,7 +69,8 @@
       </div>
 
       <div class="header-actions">
-        <button class="primary-btn" type="button">Filter</button>
+        <button id="filterBtn" class="primary-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="filterDropdown">Filter</button>
+        <div id="filterDropdown" class="filter-dropdown" hidden aria-hidden="true"></div>
       </div>
     </section>
 
@@ -89,10 +90,10 @@
         <table id="inventoryTable" class="inventory-table" aria-label="Inventory table">
           <thead>
             <tr>
-              <th scope="col">Item</th>
-              <th scope="col">Category</th>
-              <th scope="col">Status</th>
-              <th scope="col">Access</th>
+              <th scope="col" data-key="name">Item</th>
+              <th scope="col" data-key="category">Category</th>
+              <th scope="col" data-key="status">Status</th>
+              <th scope="col" data-key="accessLevel">Access</th>
             </tr>
           </thead>
           <tbody></tbody>
