@@ -5,6 +5,7 @@ const fabMenu = document.getElementById("fabMenu");
 const profileFab = document.getElementById("profileFab");
 const settingsFab = document.getElementById("settingsFab");
 const addDeviceFab = document.getElementById("addDeviceFab");
+const homeFab = document.getElementById("homeFab");
 
 const inventoryItems = [
     {
@@ -349,6 +350,12 @@ function setFabActionPositions() {
         action.style.transitionDelay = `${index * 55}ms`;
     });
 }
+
+homeFab.addEventListener("click", (event) => {
+    event.stopPropagation();
+    console.log("Go to home");
+    closeFabMenu();
+});
 
 function openFabMenu() {
     setFabActionPositions();
