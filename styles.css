@@ -740,12 +740,12 @@ body {
 
 .access-low {
   background: rgba(201, 206, 214, 0.22);
-  color: #bdbdbd;
+  color: #83a6b4b7;
 }
 
 .access-medium {
   background: rgba(220, 228, 236, 0.2);
-  color: #83a6b4b7;
+  color: #bdbdbd;
 }
 
 .access-high {
