@@ -643,8 +643,15 @@ function setFabActionPositions() {
 
 homeFab.addEventListener("click", (event) => {
     event.stopPropagation();
-    console.log("Go to home");
+    // Close the floating action menu and navigate to the main page.
     closeFabMenu();
+    // Navigate to main.html (relative). This works when served and when opened locally.
+    try {
+        window.location.href = 'main.html';
+    } catch (e) {
+        // fallback: reload current location
+        window.location.reload();
+    }
 });
 
 function openFabMenu() {
