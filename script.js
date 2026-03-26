@@ -39,7 +39,7 @@ const inventoryItems = [
     name: "Steel Hammer",
     category: "Tools",
     status: "Active",
-    quantity: 42,
+    accessLevel: "Low",
     sku: "TL-1001",
     supplier: "ForgeWorks",
     location: "Aisle A / Bin 12",
@@ -51,7 +51,7 @@ const inventoryItems = [
     name: "Cordless Drill",
     category: "Power Tools",
     status: "Error",
-    quantity: 7,
+    accessLevel: "High",
     sku: "PT-2104",
     supplier: "VoltEdge",
     location: "Aisle B / Shelf 4",
@@ -63,7 +63,7 @@ const inventoryItems = [
     name: "Safety Glasses",
     category: "Safety",
     status: "Active",
-    quantity: 128,
+    accessLevel: "Low",
     sku: "SF-3308",
     supplier: "SafeLine",
     location: "Aisle D / Rack 2",
@@ -75,7 +75,7 @@ const inventoryItems = [
     name: "Industrial Gloves",
     category: "Safety",
     status: "Inactive",
-    quantity: 0,
+    accessLevel: "Admin",
     sku: "SF-4412",
     supplier: "SafeLine",
     location: "Aisle D / Rack 5",
@@ -87,7 +87,7 @@ const inventoryItems = [
     name: "Paint Marker Set",
     category: "Consumables",
     status: "Active",
-    quantity: 23,
+    accessLevel: "Medium",
     sku: "CS-5015",
     supplier: "MarkRight",
     location: "Aisle C / Drawer 7",
@@ -109,6 +109,21 @@ function getStatusClass(status) {
       return "status-pill status-pill--error";
     default:
       return "status-pill";
+  }
+}
+
+function getAccessClass(level) {
+  switch (level.toLowerCase()) {
+    case "low":
+      return "access-pill access-low";
+    case "medium":
+      return "access-pill access-medium";
+    case "high":
+      return "access-pill access-high";
+    case "admin":
+      return "access-pill access-admin";
+    default:
+      return "access-pill";
   }
 }
 
@@ -140,7 +155,9 @@ function createRowGroup(item) {
     <span class="row-data">
       <span class="${getStatusClass(item.status)}">${item.status}</span>
     </span>
-    <span class="row-data qty-cell">${item.quantity}</span>
+    <span class="row-data access-cell">
+      <span class="${getAccessClass(item.accessLevel)}">${item.accessLevel}</span>
+    </span>
 
     <span class="chevron" aria-hidden="true">
       <svg viewBox="0 0 24 24" width="18" height="18">
@@ -280,6 +297,7 @@ function filterItems(query) {
       item.name,
       item.category,
       item.status,
+      item.accessLevel,
       item.sku,
       item.supplier,
       item.location,

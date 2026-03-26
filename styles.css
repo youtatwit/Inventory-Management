@@ -248,11 +248,10 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
-.inventory-table thead th:nth-child(2),
-.inventory-table thead th:nth-child(3),
-.inventory-table thead th:nth-child(4) {
-  width: 16%;
-}
+.inventory-table thead th:nth-child(1) { width: 45%; }
+.inventory-table thead th:nth-child(2) { width: 20%; }
+.inventory-table thead th:nth-child(3) { width: 20%; }
+.inventory-table thead th:nth-child(4) { width: 15%; }
 
 /* ---------------------------
    Expandable row groups
@@ -279,7 +278,7 @@ body {
   background: transparent;
   color: var(--text);
   display: grid;
-  grid-template-columns: minmax(240px, 1.8fr) 1fr 1fr 0.7fr;
+  grid-template-columns: 45% 20% 20% 15%;
   gap: 16px;
   align-items: center;
   padding: 18px 56px 18px 20px;
@@ -339,7 +338,7 @@ body {
   font-size: 0.95rem;
 }
 
-.qty-cell {
+.access-cell {
   font-weight: 700;
 }
 
@@ -451,6 +450,38 @@ body {
   background: rgba(255, 221, 87, 0.22);
   color: #ffe9a3;
   border-color: rgba(255, 233, 163, 0.3);
+}
+
+.access-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.access-low {
+  background: rgba(201, 206, 214, 0.22);
+  color: #bdbdbd;
+}
+
+.access-medium {
+  background: rgba(220, 228, 236, 0.2);
+  color: #83a6b4b7;
+}
+
+.access-high {
+  background: rgba(225,146,78,0.15);
+  color: #d3a259;
+}
+
+.access-admin {
+  background: linear-gradient(135deg, rgba(225, 146, 78, 0.2), rgba(205, 88, 51, 0.18));
+  color: #f8c58b;
 }
 
 /* ---------------------------
