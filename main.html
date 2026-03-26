@@ -3,11 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Top Slide-Out Toolbar</title>
+  <title>Inventory Management</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
   <div class="topbar tool-bg" id="topbar">
     <button class="tool" type="button" title="Search" aria-label="Search">🔍</button>
     <button class="tool" type="button" title="Add" aria-label="Add">➕</button>
@@ -16,56 +15,60 @@
 
   <div class="topbar-hotspot" id="hotspot" aria-hidden="true"></div>
 
-  <div class="content">
-    <h1>Items</h1>
-    <table>
-      <tr><h2><th>Name</th><th>Status</th></h2></tr>
-      <tr>
-        <td colspan="2">
-          <button class="row-btn" type="button" data-item-id="1" aria-label="Open Item 1">
-            <span class="row-name">Item 1</span>
-            <span class="row-status">Active</span>
-          </button>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <button class="row-btn" type="button" data-item-id="2" aria-label="Open Item 2">
-            <span class="row-name">Item 2</span>
-            <span class="row-status">Inactive</span>
-          </button>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2">
-          <button class="row-btn" type="button" data-item-id="3" aria-label="Open Item 3">
-            <span class="row-name">Item 3</span>
-            <span class="row-status">Active</span>
-          </button>
-        </td>
-      </tr>
+  <main class="content">
+    <section class="page-header">
+      <div>
+        <p class="eyebrow">Dashboard</p>
+        <h1>Inventory Items</h1>
+        <p class="page-copy">
+          Click any item row to expand it and reveal additional details.
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <button class="primary-btn" type="button">+ New Item</button>
+      </div>
+    </section>
+
+    <section class="table-shell">
+      <div class="table-toolbar">
+        <div class="toolbar-left">
+          <input
+            id="searchInput"
+            class="search-input"
+            type="text"
+            placeholder="Search items, category, supplier..."
+            aria-label="Search inventory items"
+          />
+        </div>
+
+        <div class="toolbar-right">
+          <span class="results-count" id="resultsCount">0 items</span>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="inventory-table" aria-label="Inventory table">
+          <thead>
             <tr>
-        <td colspan="2">
-          <button class="row-btn" type="button" data-item-id="3" aria-label="Open Item 3">
-            <span class="row-name">Item 4</span>
-            <span class="row-status">Active</span>
-          </button>
-        </td>
-      </tr>
-            <tr>
-        <td colspan="2">
-          <button class="row-btn" type="button" data-item-id="4" aria-label="Open Item 4">
-            <span class="row-name">Item 5</span>
-            <span class="row-status">Active</span>
-          </button>
-        </td>
-      </tr>
-    </table>
-  </div>
+              <th scope="col">Item</th>
+              <th scope="col">Category</th>
+              <th scope="col">Status</th>
+              <th scope="col">Qty</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
 
   <script>
     const topbar = document.getElementById("topbar");
     const hotspot = document.getElementById("hotspot");
+    const tableBody = document.getElementById("inventoryTableBody");
+    const searchInput = document.getElementById("searchInput");
+    const resultsCount = document.getElementById("resultsCount");
 
     let closeTimeout = null;
 
@@ -74,43 +77,296 @@
         clearTimeout(closeTimeout);
         closeTimeout = null;
       }
-      if (!topbar.classList.contains('open')) {
-        topbar.classList.add('open');
-      }
+      topbar.classList.add("open");
     }
 
     function closeBar(delay = 250) {
       if (closeTimeout) clearTimeout(closeTimeout);
       closeTimeout = setTimeout(() => {
-        topbar.classList.remove('open');
+        topbar.classList.remove("open");
         closeTimeout = null;
       }, delay);
     }
 
-    // Open when hovering the top hotspot or over the topbar
-    hotspot.addEventListener('mouseenter', openBar);
-    topbar.addEventListener('mouseenter', openBar);
+    hotspot.addEventListener("mouseenter", openBar);
+    topbar.addEventListener("mouseenter", openBar);
+    hotspot.addEventListener("mouseleave", () => closeBar(250));
+    topbar.addEventListener("mouseleave", () => closeBar(250));
 
-    // Close shortly after mouse leaves both the hotspot and topbar
-    hotspot.addEventListener('mouseleave', () => closeBar(250));
-    topbar.addEventListener('mouseleave', () => closeBar(250));
-
-    // Close on Escape
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && topbar.classList.contains("open")) {
         closeBar(0);
       }
     });
 
-    // Row click handlers (each table row is a button)
-    document.querySelectorAll('.row-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const name = btn.querySelector('.row-name')?.textContent.trim();
-        console.log('Row clicked:', name, btn.dataset.itemId);
-        // TODO: replace with navigation or open detail view
+    const inventoryItems = [
+      {
+        id: 1,
+        name: "Steel Hammer",
+        category: "Tools",
+        status: "In Stock",
+        quantity: 42,
+        sku: "TL-1001",
+        supplier: "ForgeWorks",
+        location: "Aisle A / Bin 12",
+        updated: "2026-02-05",
+        notes: "General-purpose hammer used in assembly and repair kits."
+      },
+      {
+        id: 2,
+        name: "Cordless Drill",
+        category: "Power Tools",
+        status: "Low Stock",
+        quantity: 7,
+        sku: "PT-2104",
+        supplier: "VoltEdge",
+        location: "Aisle B / Shelf 4",
+        updated: "2026-02-03",
+        notes: "18V drill kit. Reorder recommended before next restock cycle."
+      },
+      {
+        id: 3,
+        name: "Safety Glasses",
+        category: "Safety",
+        status: "In Stock",
+        quantity: 128,
+        sku: "SF-3308",
+        supplier: "SafeLine",
+        location: "Aisle D / Rack 2",
+        updated: "2026-01-30",
+        notes: "Anti-fog coated lenses. Standard issue for workshop floor staff."
+      },
+      {
+        id: 4,
+        name: "Industrial Gloves",
+        category: "Safety",
+        status: "Out of Stock",
+        quantity: 0,
+        sku: "SF-4412",
+        supplier: "SafeLine",
+        location: "Aisle D / Rack 5",
+        updated: "2026-02-01",
+        notes: "Awaiting supplier confirmation on incoming shipment."
+      },
+      {
+        id: 5,
+        name: "Paint Marker Set",
+        category: "Consumables",
+        status: "In Stock",
+        quantity: 23,
+        sku: "CS-5015",
+        supplier: "MarkRight",
+        location: "Aisle C / Drawer 7",
+        updated: "2026-02-02",
+        notes: "Used for warehouse labeling and package marking."
+      }
+    ];
+
+    let currentItems = [...inventoryItems];
+    let openItemId = null;
+
+    function getStatusClass(status) {
+      switch (status.toLowerCase()) {
+        case "in stock":
+          return "status-pill status-pill--success";
+        case "low stock":
+          return "status-pill status-pill--warning";
+        case "out of stock":
+          return "status-pill status-pill--danger";
+        default:
+          return "status-pill";
+      }
+    }
+
+    function createRowGroup(item) {
+      const rowGroup = document.createElement("tbody");
+      rowGroup.className = "row-group";
+      rowGroup.dataset.itemId = item.id;
+
+      const summaryRow = document.createElement("tr");
+      summaryRow.className = "summary-row";
+
+      const summaryCell = document.createElement("td");
+      summaryCell.colSpan = 4;
+      summaryCell.className = "summary-cell";
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "row-toggle";
+      button.setAttribute("aria-expanded", "false");
+      button.setAttribute("aria-controls", `details-${item.id}`);
+
+      button.innerHTML = `
+        <span class="row-main">
+          <span class="item-name">${item.name}</span>
+          <span class="item-meta">SKU: ${item.sku}</span>
+        </span>
+
+        <span class="row-data category-cell">${item.category}</span>
+        <span class="row-data">
+          <span class="${getStatusClass(item.status)}">${item.status}</span>
+        </span>
+        <span class="row-data qty-cell">${item.quantity}</span>
+
+        <span class="chevron" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18">
+            <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </span>
+      `;
+
+      summaryCell.appendChild(button);
+      summaryRow.appendChild(summaryCell);
+
+      const detailsRow = document.createElement("tr");
+      detailsRow.className = "details-row";
+
+      const detailsCell = document.createElement("td");
+      detailsCell.colSpan = 4;
+      detailsCell.className = "details-cell";
+
+      const detailsPanel = document.createElement("div");
+      detailsPanel.className = "details-panel";
+      detailsPanel.id = `details-${item.id}`;
+
+      detailsPanel.innerHTML = `
+        <div class="details-grid">
+          <div class="detail-card">
+            <span class="detail-label">Supplier</span>
+            <span class="detail-value">${item.supplier}</span>
+          </div>
+          <div class="detail-card">
+            <span class="detail-label">Location</span>
+            <span class="detail-value">${item.location}</span>
+          </div>
+          <div class="detail-card">
+            <span class="detail-label">Last Updated</span>
+            <span class="detail-value">${item.updated}</span>
+          </div>
+          <div class="detail-card">
+            <span class="detail-label">Notes</span>
+            <span class="detail-value">${item.notes}</span>
+          </div>
+        </div>
+      `;
+
+      detailsCell.appendChild(detailsPanel);
+      detailsRow.appendChild(detailsCell);
+
+      button.addEventListener("click", () => {
+        toggleRow(item.id);
       });
+
+      rowGroup.appendChild(summaryRow);
+      rowGroup.appendChild(detailsRow);
+
+      return rowGroup;
+    }
+
+    function renderTable(items) {
+      tableBody.innerHTML = "";
+      resultsCount.textContent = `${items.length} item${items.length === 1 ? "" : "s"}`;
+
+      if (!items.length) {
+        const emptyRow = document.createElement("tr");
+        emptyRow.innerHTML = `
+          <td colspan="4" class="empty-state">
+            No matching inventory items found.
+          </td>
+        `;
+        tableBody.appendChild(emptyRow);
+        return;
+      }
+
+      items.forEach((item) => {
+        tableBody.appendChild(createRowGroup(item));
+      });
+
+      if (openItemId !== null) {
+        const existingGroup = document.querySelector(`.row-group[data-item-id="${openItemId}"]`);
+        if (existingGroup) {
+          openRow(existingGroup);
+        } else {
+          openItemId = null;
+        }
+      }
+    }
+
+    function closeAllRows() {
+      document.querySelectorAll(".row-group").forEach((group) => {
+        group.classList.remove("is-open");
+        const btn = group.querySelector(".row-toggle");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+      });
+    }
+
+    function openRow(group) {
+      closeAllRows();
+      group.classList.add("is-open");
+      const btn = group.querySelector(".row-toggle");
+      if (btn) btn.setAttribute("aria-expanded", "true");
+      openItemId = Number(group.dataset.itemId);
+    }
+
+    function toggleRow(itemId) {
+      const group = document.querySelector(`.row-group[data-item-id="${itemId}"]`);
+      if (!group) return;
+
+      const isOpen = group.classList.contains("is-open");
+
+      if (isOpen) {
+        group.classList.remove("is-open");
+        const btn = group.querySelector(".row-toggle");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+        openItemId = null;
+        return;
+      }
+
+      openRow(group);
+    }
+
+    function filterItems(query) {
+      const normalized = query.trim().toLowerCase();
+
+      if (!normalized) {
+        currentItems = [...inventoryItems];
+        renderTable(currentItems);
+        return;
+      }
+
+      currentItems = inventoryItems.filter((item) => {
+        return [
+          item.name,
+          item.category,
+          item.status,
+          item.sku,
+          item.supplier,
+          item.location,
+          item.notes
+        ].some((value) => String(value).toLowerCase().includes(normalized));
+      });
+
+      renderTable(currentItems);
+    }
+
+    searchInput.addEventListener("input", (event) => {
+      filterItems(event.target.value);
     });
+
+    renderTable(currentItems);
+
+    /*
+      Later, when your MySQL backend is ready, replace inventoryItems with:
+
+      async function loadItems() {
+        const response = await fetch("/api/items");
+        const data = await response.json();
+        currentItems = data;
+        renderTable(currentItems);
+      }
+
+      loadItems();
+    */
   </script>
 </body>
 </html>
-
