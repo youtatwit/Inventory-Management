@@ -1,151 +1,124 @@
-const topbar = document.getElementById("topbar");
-const hotspot = document.getElementById("hotspot");
 const inventoryTable = document.getElementById("inventoryTable");
 const searchInput = document.getElementById("searchInput");
 const resultsCount = document.getElementById("resultsCount");
-
-let closeTimeout = null;
-
-function openBar() {
-  if (closeTimeout) {
-    clearTimeout(closeTimeout);
-    closeTimeout = null;
-  }
-  topbar.classList.add("open");
-}
-
-function closeBar(delay = 250) {
-  if (closeTimeout) clearTimeout(closeTimeout);
-  closeTimeout = setTimeout(() => {
-    topbar.classList.remove("open");
-    closeTimeout = null;
-  }, delay);
-}
-
-hotspot.addEventListener("mouseenter", openBar);
-topbar.addEventListener("mouseenter", openBar);
-hotspot.addEventListener("mouseleave", () => closeBar(250));
-topbar.addEventListener("mouseleave", () => closeBar(250));
-
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && topbar.classList.contains("open")) {
-    closeBar(0);
-  }
-});
+const fabMenu = document.getElementById("fabMenu");
+const profileFab = document.getElementById("profileFab");
+const settingsFab = document.getElementById("settingsFab");
+const addDeviceFab = document.getElementById("addDeviceFab");
 
 const inventoryItems = [
-  {
-    id: 1,
-    name: "Steel Hammer",
-    category: "Tools",
-    status: "Active",
-    accessLevel: "Low",
-    sku: "TL-1001",
-    supplier: "ForgeWorks",
-    location: "Aisle A / Bin 12",
-    updated: "2026-02-05",
-    notes: "General-purpose hammer used in assembly and repair kits."
-  },
-  {
-    id: 2,
-    name: "Cordless Drill",
-    category: "Power Tools",
-    status: "Error",
-    accessLevel: "High",
-    sku: "PT-2104",
-    supplier: "VoltEdge",
-    location: "Aisle B / Shelf 4",
-    updated: "2026-02-03",
-    notes: "18V drill kit. Reorder recommended before next restock cycle."
-  },
-  {
-    id: 3,
-    name: "Safety Glasses",
-    category: "Safety",
-    status: "Active",
-    accessLevel: "Low",
-    sku: "SF-3308",
-    supplier: "SafeLine",
-    location: "Aisle D / Rack 2",
-    updated: "2026-01-30",
-    notes: "Anti-fog coated lenses. Standard issue for workshop floor staff."
-  },
-  {
-    id: 4,
-    name: "Industrial Gloves",
-    category: "Safety",
-    status: "Inactive",
-    accessLevel: "Admin",
-    sku: "SF-4412",
-    supplier: "SafeLine",
-    location: "Aisle D / Rack 5",
-    updated: "2026-02-01",
-    notes: "Awaiting supplier confirmation on incoming shipment."
-  },
-  {
-    id: 5,
-    name: "Paint Marker Set",
-    category: "Consumables",
-    status: "Active",
-    accessLevel: "Medium",
-    sku: "CS-5015",
-    supplier: "MarkRight",
-    location: "Aisle C / Drawer 7",
-    updated: "2026-02-02",
-    notes: "Used for warehouse labeling and package marking."
-  }
+    {
+        id: 1,
+        name: "Steel Hammer",
+        category: "Tools",
+        status: "Active",
+        accessLevel: "Low",
+        sku: "TL-1001",
+        supplier: "ForgeWorks",
+        location: "Aisle A / Bin 12",
+        updated: "2026-02-05",
+        notes: "General-purpose hammer used in assembly and repair kits."
+    },
+    {
+        id: 2,
+        name: "Cordless Drill",
+        category: "Power Tools",
+        status: "Error",
+        accessLevel: "High",
+        sku: "PT-2104",
+        supplier: "VoltEdge",
+        location: "Aisle B / Shelf 4",
+        updated: "2026-02-03",
+        notes: "18V drill kit. Reorder recommended before next restock cycle."
+    },
+    {
+        id: 3,
+        name: "Safety Glasses",
+        category: "Safety",
+        status: "Active",
+        accessLevel: "Low",
+        sku: "SF-3308",
+        supplier: "SafeLine",
+        location: "Aisle D / Rack 2",
+        updated: "2026-01-30",
+        notes: "Anti-fog coated lenses. Standard issue for workshop floor staff."
+    },
+    {
+        id: 4,
+        name: "Industrial Gloves",
+        category: "Safety",
+        status: "Inactive",
+        accessLevel: "Admin",
+        sku: "SF-4412",
+        supplier: "SafeLine",
+        location: "Aisle D / Rack 5",
+        updated: "2026-02-01",
+        notes: "Awaiting supplier confirmation on incoming shipment."
+    },
+    {
+        id: 5,
+        name: "Paint Marker Set",
+        category: "Consumables",
+        status: "Active",
+        accessLevel: "Medium",
+        sku: "CS-5015",
+        supplier: "MarkRight",
+        location: "Aisle C / Drawer 7",
+        updated: "2026-02-02",
+        notes: "Used for warehouse labeling and package marking."
+    }
 ];
 
 let currentItems = [...inventoryItems];
 let openItemId = null;
 
 function getStatusClass(status) {
-  switch (status.toLowerCase()) {
-    case "active":
-      return "status-pill status-pill--active";
-    case "inactive":
-      return "status-pill status-pill--inactive";
-    case "error":
-      return "status-pill status-pill--error";
-    default:
-      return "status-pill";
-  }
+    switch (status.toLowerCase()) {
+        case "active":
+            return "status-pill status-pill--active";
+        case "inactive":
+            return "status-pill status-pill--inactive";
+        case "error":
+            return "status-pill status-pill--error";
+        default:
+            return "status-pill";
+    }
 }
 
 function getAccessClass(level) {
-  switch (level.toLowerCase()) {
-    case "low":
-      return "access-pill access-low";
-    case "medium":
-      return "access-pill access-medium";
-    case "high":
-      return "access-pill access-high";
-    case "admin":
-      return "access-pill access-admin";
-    default:
-      return "access-pill";
-  }
+    switch (level.toLowerCase()) {
+        case "low":
+            return "access-pill access-low";
+        case "medium":
+            return "access-pill access-medium";
+        case "high":
+            return "access-pill access-high";
+        case "admin":
+            return "access-pill access-admin";
+        default:
+            return "access-pill";
+    }
 }
 
 function createRowGroup(item) {
-  const rowGroup = document.createElement("tbody");
-  rowGroup.className = "row-group";
-  rowGroup.dataset.itemId = item.id;
+    const rowGroup = document.createElement("tbody");
+    rowGroup.className = "row-group";
+    rowGroup.dataset.itemId = item.id;
 
-  const summaryRow = document.createElement("tr");
-  summaryRow.className = "summary-row";
+    const summaryRow = document.createElement("tr");
+    summaryRow.className = "summary-row";
 
-  const summaryCell = document.createElement("td");
-  summaryCell.colSpan = 4;
-  summaryCell.className = "summary-cell";
+    const summaryCell = document.createElement("td");
+    summaryCell.colSpan = 4;
+    summaryCell.className = "summary-cell";
 
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "row-toggle";
-  button.setAttribute("aria-expanded", "false");
-  button.setAttribute("aria-controls", `details-${item.id}`);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "row-toggle";
+    button.setAttribute("aria-expanded", "false");
+    button.setAttribute("aria-controls", `details-${item.id}`);
 
-  button.innerHTML = `
+    button.innerHTML = `
     <span class="row-main">
       <span class="item-name">${item.name}</span>
       <span class="item-meta">SKU: ${item.sku}</span>
@@ -166,21 +139,21 @@ function createRowGroup(item) {
     </span>
   `;
 
-  summaryCell.appendChild(button);
-  summaryRow.appendChild(summaryCell);
+    summaryCell.appendChild(button);
+    summaryRow.appendChild(summaryCell);
 
-  const detailsRow = document.createElement("tr");
-  detailsRow.className = "details-row";
+    const detailsRow = document.createElement("tr");
+    detailsRow.className = "details-row";
 
-  const detailsCell = document.createElement("td");
-  detailsCell.colSpan = 4;
-  detailsCell.className = "details-cell";
+    const detailsCell = document.createElement("td");
+    detailsCell.colSpan = 4;
+    detailsCell.className = "details-cell";
 
-  const detailsPanel = document.createElement("div");
-  detailsPanel.className = "details-panel";
-  detailsPanel.id = `details-${item.id}`;
+    const detailsPanel = document.createElement("div");
+    detailsPanel.className = "details-panel";
+    detailsPanel.id = `details-${item.id}`;
 
-  detailsPanel.innerHTML = `
+    detailsPanel.innerHTML = `
     <div class="details-grid">
       <div class="detail-card">
         <span class="detail-label">Supplier</span>
@@ -201,116 +174,233 @@ function createRowGroup(item) {
     </div>
   `;
 
-  detailsCell.appendChild(detailsPanel);
-  detailsRow.appendChild(detailsCell);
+    detailsCell.appendChild(detailsPanel);
+    detailsRow.appendChild(detailsCell);
 
-  button.addEventListener("click", () => {
-    toggleRow(item.id);
-  });
+    button.addEventListener("click", () => {
+        toggleRow(item.id);
+    });
 
-  rowGroup.appendChild(summaryRow);
-  rowGroup.appendChild(detailsRow);
+    rowGroup.appendChild(summaryRow);
+    rowGroup.appendChild(detailsRow);
 
-  return rowGroup;
+    return rowGroup;
 }
 
 function renderTable(items) {
-  inventoryTable
-    .querySelectorAll("tbody.row-group, tbody.table-empty-body")
-    .forEach((section) => section.remove());
+    inventoryTable
+        .querySelectorAll("tbody.row-group, tbody.table-empty-body")
+        .forEach((section) => section.remove());
 
-  resultsCount.textContent = `${items.length} item${items.length === 1 ? "" : "s"}`;
+    resultsCount.textContent = `${items.length} item${items.length === 1 ? "" : "s"}`;
 
-  if (!items.length) {
-    const emptyBody = document.createElement("tbody");
-    emptyBody.className = "table-empty-body";
+    if (!items.length) {
+        const emptyBody = document.createElement("tbody");
+        emptyBody.className = "table-empty-body";
 
-    const emptyRow = document.createElement("tr");
-    emptyRow.innerHTML = `
+        const emptyRow = document.createElement("tr");
+        emptyRow.innerHTML = `
       <td colspan="4" class="empty-state">
         No matching inventory items found.
       </td>
     `;
-    emptyBody.appendChild(emptyRow);
-    inventoryTable.appendChild(emptyBody);
-    return;
-  }
-
-  items.forEach((item) => {
-    inventoryTable.appendChild(createRowGroup(item));
-  });
-
-  if (openItemId !== null) {
-    const existingGroup = document.querySelector(`.row-group[data-item-id="${openItemId}"]`);
-    if (existingGroup) {
-      openRow(existingGroup);
-    } else {
-      openItemId = null;
+        emptyBody.appendChild(emptyRow);
+        inventoryTable.appendChild(emptyBody);
+        return;
     }
-  }
+
+    items.forEach((item) => {
+        inventoryTable.appendChild(createRowGroup(item));
+    });
+
+    if (openItemId !== null) {
+        const existingGroup = document.querySelector(`.row-group[data-item-id="${openItemId}"]`);
+        if (existingGroup) {
+            openRow(existingGroup);
+        } else {
+            openItemId = null;
+        }
+    }
 }
 
 function closeAllRows() {
-  document.querySelectorAll(".row-group").forEach((group) => {
-    group.classList.remove("is-open");
-    const btn = group.querySelector(".row-toggle");
-    if (btn) btn.setAttribute("aria-expanded", "false");
-  });
+    document.querySelectorAll(".row-group").forEach((group) => {
+        group.classList.remove("is-open");
+        const btn = group.querySelector(".row-toggle");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+    });
 }
 
 function openRow(group) {
-  closeAllRows();
-  group.classList.add("is-open");
-  const btn = group.querySelector(".row-toggle");
-  if (btn) btn.setAttribute("aria-expanded", "true");
-  openItemId = Number(group.dataset.itemId);
+    const currentlyOpen = document.querySelector(".row-group.is-open");
+
+    if (currentlyOpen && currentlyOpen !== group) {
+        currentlyOpen.classList.remove("is-open");
+        const currentBtn = currentlyOpen.querySelector(".row-toggle");
+        if (currentBtn) currentBtn.setAttribute("aria-expanded", "false");
+        animateDetailsClose(currentlyOpen);
+    }
+
+    group.classList.add("is-open");
+    const btn = group.querySelector(".row-toggle");
+    if (btn) btn.setAttribute("aria-expanded", "true");
+
+    animateDetailsOpen(group);
+    openItemId = Number(group.dataset.itemId);
 }
 
 function toggleRow(itemId) {
-  const group = document.querySelector(`.row-group[data-item-id="${itemId}"]`);
-  if (!group) return;
+    const group = document.querySelector(`.row-group[data-item-id="${itemId}"]`);
+    if (!group) return;
 
-  const isOpen = group.classList.contains("is-open");
+    const isOpen = group.classList.contains("is-open");
 
-  if (isOpen) {
-    group.classList.remove("is-open");
-    const btn = group.querySelector(".row-toggle");
-    if (btn) btn.setAttribute("aria-expanded", "false");
-    openItemId = null;
-    return;
-  }
+    if (isOpen) {
+        group.classList.remove("is-open");
+        const btn = group.querySelector(".row-toggle");
+        if (btn) btn.setAttribute("aria-expanded", "false");
+        animateDetailsClose(group);
+        openItemId = null;
+        return;
+    }
 
-  openRow(group);
+    openRow(group);
+}
+
+function animateDetailsOpen(group) {
+    const panel = group.querySelector(".details-panel");
+    if (!panel) return;
+
+    panel.style.height = "0px";
+    panel.offsetHeight;
+    panel.style.height = `${panel.scrollHeight}px`;
+
+    const handleOpenEnd = (event) => {
+        if (event.propertyName !== "height") return;
+        if (group.classList.contains("is-open")) {
+            panel.style.height = "auto";
+        }
+        panel.removeEventListener("transitionend", handleOpenEnd);
+    };
+
+    panel.addEventListener("transitionend", handleOpenEnd);
+}
+
+function animateDetailsClose(group) {
+    const panel = group.querySelector(".details-panel");
+    if (!panel) return;
+
+    panel.style.height = `${panel.scrollHeight}px`;
+    panel.offsetHeight;
+    panel.style.height = "0px";
 }
 
 function filterItems(query) {
-  const normalized = query.trim().toLowerCase();
+    const normalized = query.trim().toLowerCase();
 
-  if (!normalized) {
-    currentItems = [...inventoryItems];
+    if (!normalized) {
+        currentItems = [...inventoryItems];
+        renderTable(currentItems);
+        return;
+    }
+
+    currentItems = inventoryItems.filter((item) => {
+        return [
+            item.name,
+            item.category,
+            item.status,
+            item.accessLevel,
+            item.sku,
+            item.supplier,
+            item.location,
+            item.notes
+        ].some((value) => String(value).toLowerCase().includes(normalized));
+    });
+
     renderTable(currentItems);
-    return;
-  }
-
-  currentItems = inventoryItems.filter((item) => {
-    return [
-      item.name,
-      item.category,
-      item.status,
-      item.accessLevel,
-      item.sku,
-      item.supplier,
-      item.location,
-      item.notes
-    ].some((value) => String(value).toLowerCase().includes(normalized));
-  });
-
-  renderTable(currentItems);
 }
 
 searchInput.addEventListener("input", (event) => {
-  filterItems(event.target.value);
+    filterItems(event.target.value);
 });
+
+const fabActions = [...document.querySelectorAll(".fab-action")];
+
+function closeFabMenu() {
+    fabMenu.classList.remove("is-open");
+    profileFab.setAttribute("aria-expanded", "false");
+
+    fabActions.forEach((action) => {
+        action.style.transitionDelay = "0ms";
+    });
+}
+
+function setFabActionPositions() {
+    fabActions.forEach((action, index) => {
+        const angleDeg = Number(action.dataset.angle || -120);
+        const radius = Number(action.dataset.radius || 112);
+        const angleRad = (angleDeg * Math.PI) / 180;
+
+        const x = Math.cos(angleRad) * radius;
+        const y = Math.sin(angleRad) * radius;
+
+        action.style.setProperty("--x", `${x}px`);
+        action.style.setProperty("--y", `${y}px`);
+        action.style.transitionDelay = `${index * 55}ms`;
+    });
+}
+
+function openFabMenu() {
+    setFabActionPositions();
+    fabMenu.classList.add("is-open");
+    profileFab.setAttribute("aria-expanded", "true");
+
+    fabActions.forEach((action, index) => {
+        action.style.transitionDelay = `${index * 55}ms`;
+    });
+}
+
+function toggleFabMenu() {
+    if (fabMenu.classList.contains("is-open")) {
+        closeFabMenu();
+        return;
+    }
+
+    openFabMenu();
+}
+
+profileFab.addEventListener("click", (event) => {
+    event.stopPropagation();
+    toggleFabMenu();
+});
+
+settingsFab.addEventListener("click", (event) => {
+    event.stopPropagation();
+    console.log("Open settings");
+    closeFabMenu();
+});
+
+addDeviceFab.addEventListener("click", (event) => {
+    event.stopPropagation();
+    console.log("Open add device flow");
+    closeFabMenu();
+});
+
+document.addEventListener("click", (event) => {
+    if (!fabMenu.contains(event.target)) {
+        closeFabMenu();
+    }
+});
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+        closeFabMenu();
+    }
+});
+
+window.addEventListener("resize", setFabActionPositions);
+
+setFabActionPositions();
 
 renderTable(currentItems);
 

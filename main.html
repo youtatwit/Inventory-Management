@@ -1,19 +1,62 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Inventory Management</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <div class="topbar tool-bg" id="topbar">
-    <button class="tool" type="button" title="Search" aria-label="Search">🔍</button>
-    <button class="tool" type="button" title="Add" aria-label="Add">➕</button>
-    <button class="tool" type="button" title="Settings" aria-label="Settings">⚙️</button>
-  </div>
 
-  <div class="topbar-hotspot" id="hotspot" aria-hidden="true"></div>
+<body>
+  <div class="fab-menu" id="fabMenu">
+    <div class="fab-actions" id="fabActions">
+      <button class="fab-action" id="settingsFab" type="button" data-angle="-110" data-radius="120"
+        aria-label="Settings" title="Settings">
+        <span class="fab-action__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
+            <path d="M12 8.75A3.25 3.25 0 1 0 12 15.25A3.25 3.25 0 1 0 12 8.75Z" stroke="currentColor"
+              stroke-width="1.8" />
+            <path
+              d="M19 12a7.4 7.4 0 0 0-.08-1l2-1.55-2-3.46-2.4.72a7.7 7.7 0 0 0-1.72-1L14.5 3h-5l-.3 2.71a7.7 7.7 0 0 0-1.72 1l-2.4-.72-2 3.46 2 1.55A7.4 7.4 0 0 0 5 12c0 .34.03.67.08 1l-2 1.55 2 3.46 2.4-.72c.52.42 1.1.76 1.72 1L9.5 21h5l.3-2.71c.62-.24 1.2-.58 1.72-1l2.4.72 2-3.46-2-1.55c.05-.33.08-.66.08-1Z"
+              stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+          </svg>
+        </span>
+      </button>
+
+      <button class="fab-action" id="homeFab" type="button" data-angle="-145" data-radius="120" aria-label="Home"
+        title="Home">
+        <span class="fab-action__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+            <path d="M3 11.5L12 4l9 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M5 10.5V20h14v-9.5" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+          </svg>
+        </span>
+      </button>
+
+      <button class="fab-action fab-action--wide" id="addDeviceFab" type="button" data-angle="-180" data-radius="120"
+        aria-label="Add device" title="Add device">
+        <span class="fab-action__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" />
+          </svg>
+        </span>
+        <span class="fab-action__label">Add</span>
+      </button>
+    </div>
+
+    <button class="profile-fab" id="profileFab" type="button" aria-label="Profile menu" aria-expanded="false"
+      aria-controls="fabActions">
+      <span class="profile-fab__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
+          <path
+            d="M12 12.25a4.25 4.25 0 1 0 0-8.5 4.25 4.25 0 0 0 0 8.5Zm0 2.25c-4.17 0-7.25 2.1-7.25 4.5 0 .41.34.75.75.75h13c.41 0 .75-.34.75-.75 0-2.4-3.08-4.5-7.25-4.5Z"
+            fill="currentColor" />
+        </svg>
+      </span>
+    </button>
+  </div>
 
   <main class="content">
     <section class="page-header">
@@ -33,13 +76,8 @@
     <section class="table-shell">
       <div class="table-toolbar">
         <div class="toolbar-left">
-          <input
-            id="searchInput"
-            class="search-input"
-            type="text"
-            placeholder="Search items, category, supplier..."
-            aria-label="Search inventory items"
-          />
+          <input id="searchInput" class="search-input" type="text" placeholder="Search items, category, supplier..."
+            aria-label="Search inventory items" />
         </div>
 
         <div class="toolbar-right">
@@ -65,4 +103,5 @@
 
   <script src="script.js"></script>
 </body>
+
 </html>
