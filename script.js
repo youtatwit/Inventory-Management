@@ -576,35 +576,8 @@ function applyFiltersAndRender() {
 
 // Clicking on cells for category/status/access toggles sort for that column
 function attachCellClickSortHandlers() {
-    document.querySelectorAll('.category-cell').forEach(cell => {
-        cell.style.cursor = 'pointer';
-        cell.onclick = (e) => {
-            const key = 'category';
-            handleHeaderClick(key, inventoryTable.querySelector('thead th[data-key="category"]'));
-        };
-    });
-
-    document.querySelectorAll('.details-row .detail-value').forEach(() => {});
-
-    document.querySelectorAll('.access-cell').forEach(cell => {
-        cell.style.cursor = 'pointer';
-        cell.onclick = (e) => {
-            const key = 'accessLevel';
-            handleHeaderClick(key, inventoryTable.querySelector('thead th[data-key="accessLevel"]'));
-        };
-    });
-
-    // status cells have classed status-pill inside; make the parent clickable
-    document.querySelectorAll('.row-data').forEach(cell => {
-        const pill = cell.querySelector('.status-pill');
-        if (pill) {
-            cell.style.cursor = 'pointer';
-            cell.onclick = (e) => {
-                const key = 'status';
-                handleHeaderClick(key, inventoryTable.querySelector('thead th[data-key="status"]'));
-            };
-        }
-    });
+    // Disabled: sorting only happens from header clicks.
+    // Row body cells should not trigger sort to avoid conflicting with row expand/collapse.
 }
 
 // Ensure cell click handlers are attached after render
