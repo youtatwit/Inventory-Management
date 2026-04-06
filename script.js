@@ -88,6 +88,44 @@ let sortState = {
     accessLevel: null
 };
 
+// ── API helpers ──────────────────────────────────────────────────────────────
+
+async function loadItems() {
+  const res = await fetch("/api/items");
+  const data = await res.json();
+  allItems = data;
+  currentItems = [...allItems];
+  renderTable(currentItems);
+}
+
+async function createItem(formData) {
+  const res = await fetch("/api/items", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData)
+  });
+  if (!res.ok) throw new Error("Failed to create item");
+  await loadItems();
+}
+
+async function updateItem(id, formData) {
+  const res = await fetch(`/api/items/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData)
+  });
+  if (!res.ok) throw new Error("Failed to update item");
+  await loadItems();
+}
+
+async function deleteItem(id) {
+  const res = await fetch(`/api/items/${id}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete item");
+  await loadItems();
+}
+
+// ── Status helper ─────────────────────────────────────────────────────────────
+
 function getStatusClass(status) {
     switch (status.toLowerCase()) {
         case "active":
@@ -115,6 +153,8 @@ function getAccessClass(level) {
             return "access-pill";
     }
 }
+
+// ── Table rendering ───────────────────────────────────────────────────────────
 
 function createRowGroup(item) {
     const rowGroup = document.createElement("tbody");
@@ -173,20 +213,24 @@ function createRowGroup(item) {
     <div class="details-grid">
       <div class="detail-card">
         <span class="detail-label">Supplier</span>
-        <span class="detail-value">${item.supplier}</span>
+        <span class="detail-value">${item.supplier ?? "—"}</span>
       </div>
       <div class="detail-card">
         <span class="detail-label">Location</span>
-        <span class="detail-value">${item.location}</span>
+        <span class="detail-value">${item.location ?? "—"}</span>
       </div>
       <div class="detail-card">
         <span class="detail-label">Last Updated</span>
-        <span class="detail-value">${item.updated}</span>
+        <span class="detail-value">${item.updated ?? "—"}</span>
       </div>
       <div class="detail-card">
         <span class="detail-label">Notes</span>
-        <span class="detail-value">${item.notes}</span>
+        <span class="detail-value">${item.notes ?? "—"}</span>
       </div>
+    </div>
+    <div class="inv-row-actions">
+      <button type="button" class="inv-edit-btn" data-id="${item.id}">Edit</button>
+      <button type="button" class="inv-delete-btn" data-id="${item.id}">Delete</button>
     </div>
   `;
 
@@ -374,6 +418,8 @@ function animateDetailsClose(group) {
     panel.style.height = "0px";
 }
 
+// ── Search / filter ───────────────────────────────────────────────────────────
+
 function filterItems(query) {
     const normalized = query.trim().toLowerCase();
 
@@ -403,6 +449,8 @@ searchInput.addEventListener("input", (event) => {
     debounceFilter(event.target.value);
 });
 
+  if (!normalized) {
+    currentItems = [...allItems];
 // debounce helper
 let debounceTimer = null;
 function debounceFilter(val) {
@@ -681,15 +729,119 @@ setFabActionPositions();
 
 renderTable(currentItems);
 
-/*
-  Later, when your MySQL backend is ready, replace inventoryItems with:
+  backdrop.innerHTML = `
+    <div class="inv-modal">
+      <div class="inv-modal-header">
+        <h2 id="invModalTitle">Add Item</h2>
+        <button type="button" class="inv-modal-close" id="invModalClose">✕</button>
+      </div>
+      <form id="invItemForm">
+        <div class="inv-form-row">
+          <label for="invFieldName">Name</label>
+          <input id="invFieldName" name="name" type="text" required />
+        </div>
+        <div class="inv-form-row">
+          <label for="invFieldSku">SKU</label>
+          <input id="invFieldSku" name="sku" type="text" />
+        </div>
+        <div class="inv-form-row">
+          <label for="invFieldCategory">Category</label>
+          <input id="invFieldCategory" name="category" type="text" />
+        </div>
+        <div class="inv-form-row">
+          <label for="invFieldStatus">Status</label>
+          <select id="invFieldStatus" name="status">
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+            <option value="Error">Error</option>
+          </select>
+        </div>
+        <div class="inv-form-row">
+          <label for="invFieldQty">Quantity</label>
+          <input id="invFieldQty" name="quantity" type="number" min="0" value="0" required />
+        </div>
+        <div class="inv-form-row">
+          <label for="invFieldSupplier">Supplier</label>
+          <input id="invFieldSupplier" name="supplier" type="text" />
+        </div>
+        <div class="inv-form-row">
+          <label for="invFieldLocation">Location</label>
+          <input id="invFieldLocation" name="location" type="text" placeholder="Aisle A / Bin 12" />
+        </div>
+        <div class="inv-form-row">
+          <label for="invFieldNotes">Notes</label>
+          <textarea id="invFieldNotes" name="notes" rows="3"></textarea>
+        </div>
+        <div class="inv-modal-footer">
+          <button type="button" class="inv-cancel-btn" id="invModalCancel">Cancel</button>
+          <button type="submit" class="inv-save-btn">Save Item</button>
+        </div>
+      </form>
+    </div>
+  `;
 
-  async function loadItems() {
-    const response = await fetch("/api/items");
-    const data = await response.json();
-    currentItems = data;
-    renderTable(currentItems);
+  document.body.appendChild(backdrop);
+  return backdrop;
+}
+
+const modalBackdrop = createModal();
+const modalTitle = document.getElementById("invModalTitle");
+const itemForm = document.getElementById("invItemForm");
+let editingId = null;
+
+function openModal(item = null) {
+  editingId = item ? item.id : null;
+  modalTitle.textContent = item ? "Edit Item" : "Add Item";
+  itemForm.reset();
+  if (item) {
+    itemForm.name.value     = item.name ?? "";
+    itemForm.sku.value      = item.sku ?? "";
+    itemForm.category.value = item.category ?? "";
+    itemForm.status.value   = item.status ?? "Active";
+    itemForm.quantity.value = item.quantity ?? 0;
+    itemForm.supplier.value = item.supplier ?? "";
+    itemForm.location.value = item.location ?? "";
+    itemForm.notes.value    = item.notes ?? "";
   }
+  modalBackdrop.hidden = false;
+}
 
-  loadItems();
-*/
+function closeModal() {
+  modalBackdrop.hidden = true;
+  editingId = null;
+}
+
+document.getElementById("invModalClose").addEventListener("click", closeModal);
+document.getElementById("invModalCancel").addEventListener("click", closeModal);
+modalBackdrop.addEventListener("click", (e) => {
+  if (e.target === modalBackdrop) closeModal();
+});
+
+itemForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const formData = {
+    name:     itemForm.name.value.trim(),
+    sku:      itemForm.sku.value.trim(),
+    category: itemForm.category.value.trim(),
+    status:   itemForm.status.value,
+    quantity: parseInt(itemForm.quantity.value, 10),
+    supplier: itemForm.supplier.value.trim() || null,
+    location: itemForm.location.value.trim() || null,
+    updated:  new Date().toISOString().split("T")[0],
+    notes:    itemForm.notes.value.trim() || null
+  };
+  if (editingId !== null) {
+    await updateItem(editingId, formData);
+  } else {
+    await createItem(formData);
+  }
+  closeModal();
+});
+
+// Wire the ➕ Add button in the topbar
+const addBtn = document.querySelector('.tool[title="Add"]');
+if (addBtn) addBtn.addEventListener("click", () => openModal());
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+loadItems();
