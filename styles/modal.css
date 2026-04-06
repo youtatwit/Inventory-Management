@@ -1,0 +1,140 @@
+.inv-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(8, 11, 13, 0.62);
+  backdrop-filter: blur(4px);
+}
+
+.inv-modal {
+  width: min(100%, 560px);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.inv-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.inv-modal-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.inv-modal-close {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: color 120ms ease, background 120ms ease;
+}
+
+.inv-modal-close:hover {
+  color: var(--text);
+  background: rgba(240, 240, 233, 0.08);
+}
+
+#invItemForm {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.inv-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inv-form-row label {
+  color: rgba(240, 240, 233, 0.85);
+  font-size: 0.92rem;
+}
+
+.inv-form-row input,
+.inv-form-row select,
+.inv-form-row textarea {
+  border: 1px solid var(--border);
+  background: rgba(240, 240, 233, 0.04);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 0.85rem 0.95rem;
+  outline: none;
+  resize: vertical;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.inv-form-row input:focus,
+.inv-form-row select:focus,
+.inv-form-row textarea:focus {
+  border-color: rgba(225, 146, 78, 0.55);
+  box-shadow: 0 0 0 3px rgba(225, 146, 78, 0.12);
+}
+
+.inv-form-row select option {
+  background: var(--surface-2);
+}
+
+.inv-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.inv-cancel-btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 0.7rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.inv-cancel-btn:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.inv-save-btn {
+  appearance: none;
+  border: 1px solid var(--border-subtle);
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.7rem 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(205, 88, 51, 0.22);
+  transition: transform 120ms ease, filter 120ms ease;
+}
+
+.inv-save-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+.inv-save-btn:active {
+  transform: translateY(0);
+  filter: brightness(0.95);
+}

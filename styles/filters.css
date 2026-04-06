@@ -1,0 +1,67 @@
+.filter-dropdown {
+  position: absolute;
+  right: 0;
+  margin-top: 10px;
+  width: 320px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: var(--shadow-md);
+  z-index: 1200;
+}
+
+.filter-group {
+  margin-bottom: 10px;
+}
+
+.filter-group h4 {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: rgba(240, 240, 233, 0.8);
+}
+
+.filter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-chip {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(240, 240, 233, 0.04);
+  color: var(--text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: 1px solid rgba(240, 240, 233, 0.04);
+}
+
+.filter-chip.active {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+  border-color: rgba(0, 0, 0, 0.18);
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.filter-clear {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.filter-apply {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}

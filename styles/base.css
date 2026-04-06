@@ -1,0 +1,51 @@
+:root {
+  --bg: #1F282D;
+  --surface: #27333A;
+  --surface-2: #2E3A3F;
+  --text: #F0F0E9;
+  --muted: #B4B8C5;
+  --accent: #E1924E;
+  --accent-2: #CD5833;
+
+  --border: rgba(240, 240, 233, 0.08);
+  --border-strong: rgba(240, 240, 233, 0.16);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+
+  --color-success: #6FCF97;
+  --color-warning: #F2C94C;
+  --color-error: #EB5757;
+
+  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.25);
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(159, 159, 186, 0.12), transparent 28%),
+    radial-gradient(circle at top right, rgba(225, 146, 78, 0.10), transparent 24%),
+    linear-gradient(180deg, #1f282d 0%, var(--bg) 100%);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
